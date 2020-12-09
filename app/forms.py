@@ -13,3 +13,9 @@ class RegisterForm(FlaskForm):
     ])
     confirm = PasswordField('repeat')
     accept_tos = BooleanField('tos', [validators.InputRequired()])
+
+
+class LoginForm(FlaskForm):
+    """ A class that validates login form """
+    username = StringField('username', [validators.DataRequired(), validators.Length(min=4, max=25)])
+    password = PasswordField('password', [validators.DataRequired()])
