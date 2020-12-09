@@ -5,6 +5,13 @@
     <meta charset="UTF-8">
 </head>
 <body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div>
+        {{ messages[0] }}
+    </div>
+    {% endif %}
+    {% endwith %}
     <form action="{{url_for('signup') }}" method="POST">
         {{ form.csrf_token }}
         <label for="email">Email:</label>
@@ -13,7 +20,7 @@
         {{ form.username() }}
         <label for="password">Password</label>
         {{ form.password() }}
-        <label for="repeat">Password</label>
+        <label for="repeat">Confirm Password</label>
         {{ form.confirm() }}
         <label for="tos">I have read and agree to the Term of Service and Privacy Policy</label>
         {{ form.accept_tos() }}
