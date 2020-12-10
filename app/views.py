@@ -23,7 +23,7 @@ def signup():
     Redirects to signup.html if the request method is a GET method.
     Otherwise, if the request method is a POST method, then it will 
     create a new user with the user details and add it into the database.
-    Then, redirects them to their feed.
+    Then, redirects them to login.
     """
     form = RegisterForm()
     if form.validate_on_submit():
@@ -50,10 +50,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
 
-        # Creating a session for the new user and redirects to feed
-        user = User.query.filter_by(username=new_username).first()
-        login_user(user, remember=remember)
-        return redirect(url_for("feed"))
+        return redirect(url_for("login"))
     return render_template('signup.html', form=form)
 
 

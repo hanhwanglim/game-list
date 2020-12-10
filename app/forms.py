@@ -5,17 +5,18 @@ from wtforms.fields.html5 import EmailField
 
 class RegisterForm(FlaskForm):
     """ A class that validates sign up form """
-    email = EmailField('email', [validators.DataRequired(), validators.Length(min=6, max=35), validators.Email()])
-    username = StringField('username', [validators.DataRequired(), validators.Length(min=4, max=25)])
-    password = PasswordField('password', [
+    email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=35), validators.Email(message="Invalid email address.")])
+    username = StringField('Username', [validators.DataRequired(), validators.Length(min=4, max=25, message="Username must be between 4 and 25 characters long.")])
+    password = PasswordField('Enter password', [
         validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match')
+        validators.EqualTo('confirm', message='Passwords must match.')
     ])
-    confirm = PasswordField('repeat')
-    accept_tos = BooleanField('tos', [validators.InputRequired()])
+    confirm = PasswordField('Confirm password')
+    accept_tos = BooleanField('I have read and agree to the Term of Service and Privacy Policy', [validators.InputRequired()])
 
 
 class LoginForm(FlaskForm):
     """ A class that validates login form """
-    username = StringField('username', [validators.DataRequired(), validators.Length(min=4, max=25)])
-    password = PasswordField('password', [validators.DataRequired()])
+    username = StringField('Username', [validators.DataRequired(), validators.Length(min=4, max=25, message="Username must be between 4 and 25 characters long.")])
+    password = PasswordField('Password', [validators.DataRequired()])
+    remember = BooleanField("Always stay logged in?")

@@ -12,16 +12,25 @@
     {% endwith %}
     <form action="{{url_for('signup') }}" method="POST">
         {{ form.csrf_token }}
-        <label for="email">Email:</label>
+        {{ form.email.label }}
         {{ form.email() }}
-        <label for="username">Username:</label>
+        {% if form.email.errors %}
+        <ul class="errors">{% for error in form.email.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        {% endif %}
+        {{ form.username.label }}
         {{ form.username() }}
-        <label for="password">Password</label>
+        {% if form.username.errors %}
+        <ul class="errors">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        {% endif %}
+        {{ form.password.label }}
         {{ form.password() }}
-        <label for="repeat">Confirm Password</label>
+        {{ form.confirm.label }}
         {{ form.confirm() }}
-        <label for="tos">I have read and agree to the Term of Service and Privacy Policy</label>
+        {% if form.password.errors %}
+        <ul class="errors">{% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        {% endif %}
         {{ form.accept_tos() }}
+        {{ form.accept_tos.label }}
         <button type="submit">Create account</button>
     </form>
 </body>
