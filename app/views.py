@@ -1,4 +1,5 @@
-from flask import render_template, request, flash
+from flask import render_template, request, flash, url_for, redirect
+from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import RegisterForm, LoginForm
@@ -7,6 +8,12 @@ from app.models import User
 
 @app.route('/', methods=['GET'])
 def index():
+    """
+    Redirects to feed if the user is already logged in.
+    Otherwise it will return to the index page.
+    """
+    if current_user.get_id() is not None:
+        return redirect(url_for('feed'))
     return render_template('index.html')
 
 
@@ -16,6 +23,7 @@ def signup():
     Redirects to signup.html if the request method is a GET method.
     Otherwise, if the request method is a POST method, then it will 
     create a new user with the user details and add it into the database.
+    Then, redirects them to their feed.
     """
     form = RegisterForm()
     if form.validate_on_submit():
@@ -41,7 +49,11 @@ def signup():
         user = User(email=new_email, username=new_username, password=generate_password_hash(new_password, method='sha256'))
         db.session.add(user)
         db.session.commit()
-        return "success"
+
+        # Creating a session for the new user and redirects to feed
+        user = User.query.filter_by(username=new_username).first()
+        login_user(user, remember=remember)
+        return redirect(url_for("feed"))
     return render_template('signup.html', form=form)
 
 
@@ -54,6 +66,7 @@ def login():
     """
     form = LoginForm()
     if form.validate_on_submit():
+        # Find the user
         username = request.form.get("username")
         password = request.form.get("password")
         remember = True if request.form.get('remember') else False
@@ -61,5 +74,21 @@ def login():
         if user is None or not check_password_hash(user.password, password):
             flash("Username or password incorrect.")
             return render_template("login.html", form=form)
-        return "success"
+        # Create a session and redirect to feed
+        login_user(user, remember=remember)
+        return redirect(url_for('feed'))
     return render_template('login.html', form=form)
+
+
+@app.route('/feed')
+@login_required
+def feed():
+    return render_template('feed.html', user=current_user)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    """ Logs the user out of the session """
+    logout_user()
+    return redirect(url_for('index'))

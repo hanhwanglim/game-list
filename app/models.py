@@ -1,7 +1,8 @@
 from app import db
+from flask_login import UserMixin
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """ A class that stores user details in the database """
     user_id = db.Column(db.Integer, primary_key=True, nullable=False)
     email = db.Column(db.String(35), unique=True, nullable=False)
@@ -10,3 +11,7 @@ class User(db.Model):
 
     def __repr__(self):
         return self.username
+
+    
+    def get_id(self):
+        return self.user_id
