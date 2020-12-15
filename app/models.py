@@ -48,11 +48,14 @@ class Game(db.Model):
     model = db.relationship('Model', secondary=game_model)
     platform = db.relationship('Platform', secondary=game_platform)
 
+    def __repr__(self):
+        return self.title
+
 
 class Developer(db.Model):
     """ A class that stores developer details in the database """
     developer_id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True)
     games = db.relationship('Game', backref='develop_games')
 
 
@@ -63,7 +66,7 @@ class Developer(db.Model):
 class Publisher(db.Model):
     """ A class that stores publisher details in the database """
     publisher_id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True)
     games = db.relationship('Game', backref='publish_games')
 
 
@@ -74,7 +77,7 @@ class Publisher(db.Model):
 class Genre(db.Model):
     """ A class that stores genre details in the database """
     genre_id = db.Column(db.Integer, primary_key=True, nullable=False)
-    genre_type = db.Column(db.String, nullable=False)
+    genre_type = db.Column(db.String, nullable=False, unique=True)
 
 
     def __repr__(self):
@@ -84,7 +87,7 @@ class Genre(db.Model):
 class Model(db.Model):
     """ A class that stores model details in the database """
     model_id = db.Column(db.Integer, primary_key=True, nullable=False)
-    model_type = db.Column(db.String, nullable=False)
+    model_type = db.Column(db.String, nullable=False, unique=True)
 
     def __repr__(self):
         return self.model_type
@@ -93,7 +96,7 @@ class Model(db.Model):
 class Platform(db.Model):
     """ A class that stores platform details in the database """
     platform_id = db.Column(db.Integer, primary_key=True, nullable=False)
-    platform_name = db.Column(db.String, nullable=False)
+    platform_name = db.Column(db.String, nullable=False, unique=True)
 
     def __repr__(self):
         return self.platform_name
