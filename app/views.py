@@ -8,6 +8,12 @@ from flask_admin.contrib.sqla import ModelView
 
 
 admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Game, db.session))
+admin.add_view(ModelView(Developer, db.session))
+admin.add_view(ModelView(Publisher, db.session))
+admin.add_view(ModelView(Genre, db.session))
+admin.add_view(ModelView(Model, db.session))
+admin.add_view(ModelView(Platform, db.session))
 
 
 @app.route('/', methods=['GET'])
