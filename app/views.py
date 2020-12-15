@@ -1,9 +1,13 @@
 from flask import render_template, request, flash, url_for, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import app, db
-from app.forms import RegisterForm, LoginForm
-from app.models import User
+from app import app, db, admin
+from app.forms import *
+from app.models import *
+from flask_admin.contrib.sqla import ModelView
+
+
+admin.add_view(ModelView(User, db.session))
 
 
 @app.route('/', methods=['GET'])
