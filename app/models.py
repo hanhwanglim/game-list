@@ -2,6 +2,11 @@ from app import db
 from flask_login import UserMixin
 
 # Relationship
+user_game = db.Table('user_game', db.Model.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('user.user_id')),
+    db.Column('game_id', db.Integer, db.ForeignKey('game.game_id'))
+)
+
 game_genre = db.Table('game_genre', db.Model.metadata,
     db.Column('game_id', db.Integer, db.ForeignKey('game.game_id')),
     db.Column('genre_id', db.Integer, db.ForeignKey('genre.genre_id'))
@@ -24,6 +29,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(25), unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     admin = db.Column(db.Boolean, default=False, nullable=False)
+    games = db.relationship('Game', secondary=user_game)
 
     def __repr__(self):
         return self.username
@@ -44,9 +50,9 @@ class Game(db.Model):
     release_date = db.Column(db.Date, nullable=False)
     developer = db.Column(db.Integer, db.ForeignKey('developer.developer_id'))
     publisher = db.Column(db.Integer, db.ForeignKey('publisher.publisher_id'))
-    genre = db.relationship('Genre', secondary=game_genre)
-    model = db.relationship('Model', secondary=game_model)
-    platform = db.relationship('Platform', secondary=game_platform)
+    genre = db.relationship('Genre', secondary=game_genre, backref='game_genre')
+    model = db.relationship('Model', secondary=game_model, backref='game_model')
+    platform = db.relationship('Platform', secondary=game_platform, backref='game_platform')
 
     def __repr__(self):
         return self.title
@@ -56,8 +62,7 @@ class Developer(db.Model):
     """ A class that stores developer details in the database """
     developer_id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String, nullable=False, unique=True)
-    games = db.relationship('Game', backref='develop_games')
-
+    games = db.relationship('Game', backref='developer_name')
 
     def __repr__(self):
         return self.name
@@ -67,8 +72,7 @@ class Publisher(db.Model):
     """ A class that stores publisher details in the database """
     publisher_id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String, nullable=False, unique=True)
-    games = db.relationship('Game', backref='publish_games')
-
+    games = db.relationship('Game', backref='publisher_name')
 
     def __repr__(self):
         return self.name
@@ -78,7 +82,6 @@ class Genre(db.Model):
     """ A class that stores genre details in the database """
     genre_id = db.Column(db.Integer, primary_key=True, nullable=False)
     genre_type = db.Column(db.String, nullable=False, unique=True)
-
 
     def __repr__(self):
         return self.genre_type
