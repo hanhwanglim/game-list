@@ -1,11 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Feed</title>
-        <meta charset="UTF-8">
-    </head>
-    <body>
-        <a href="{{ url_for('logout') }}">Logout</a>
-        <h1>Welcome, {{ user.username }}!</h1>
-    </body>
-</html>
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block login %}<a class="nav-link" href="#">Profile</a>{% endblock %}
+{% block signup %}<a class="nav-link" href="{{ url_for('logout') }}">Logout</a>{% endblock %}
+{% block content %}
+<body>
+    <h1>Welcome, {{ user.username }}!</h1>
+    <h2>Your games</h2>
+    <ul>
+        {% for game in games %}
+        <li>{{ game.title }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Checkout</h2>
+    {% for game in checkout %}
+    <li>{{ game.title }}</li>
+    {% endfor %}
+</body>
+{% endblock %}

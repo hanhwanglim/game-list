@@ -5,6 +5,8 @@ from app import app, db, admin
 from app.forms import *
 from app.models import *
 from flask_admin.contrib.sqla import ModelView
+from datetime import date
+from sqlalchemy import func
 
 
 admin.add_view(ModelView(User, db.session))
@@ -22,9 +24,13 @@ def index():
     Redirects to feed if the user is already logged in.
     Otherwise it will return to the index page.
     """
+    year = date.today().year
+    games_1 = Game.query.filter(Game.release_date < date(year + 1, 1, 1), Game.release_date >= date(year, 1, 1)).limit(10)
+    games_2 = Game.query.filter(Game.release_date < date(year, 1, 1), Game.release_date >= date(year - 1, 1, 1)).limit(10)
+    games_3 = Game.query.filter(Game.release_date < date(year - 1, 1, 1), Game.release_date >= date(year - 2, 1, 1)).limit(10)
     if current_user.get_id() is not None:
         return redirect(url_for('feed'))
-    return render_template('index.html')
+    return render_template('index.html', games_1=games_1, games_2=games_2, games_3=games_3, year=year)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -90,7 +96,25 @@ def login():
 @app.route('/feed')
 @login_required
 def feed():
-    return render_template('feed.html', user=current_user)
+    games = current_user.games
+    random = Game.query.filter_by().order_by(func.random()).limit(5)
+    return render_template('feed.html', user=current_user, games=games, checkout=random)
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.form is not None:
+        query = request.form.get('search')
+        search_query = "%" + request.form.get('search') + "%"
+        print(query)
+        games = Game.query.filter(Game.title.like(search_query)).limit(10).all()
+        developers = Developer.query.filter(Developer.name.like(search_query)).limit(10).all()
+        publishers = Publisher.query.filter(Publisher.name.like(search_query)).limit(10).all()
+        genres = Genre.query.filter(Genre.genre_type.like(search_query)).limit(10).all()
+        print(games)
+        return render_template('search.html', query=query, games=games, developers=developers, publishers=publishers, genres=genres)
+    return render_template('search.html')
+
 
 
 @app.route('/logout')

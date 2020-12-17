@@ -1,13 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Game List</title>
-        <meta charset="UTF-8">
-    </head>
-    <body>
-        <ul>
-            <li><a href="{{ url_for('signup') }}">Sign up</a></li>
-            <li><a href="{{ url_for('login') }}">Login</a></li>
-        </ul>
-    </body>
-</html>
+{% extends "base.html" %}
+{% block title %}Game List{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block login %}<a class="nav-link" href="{{ url_for('login') }}">Login</a>{% endblock %}
+{% block signup %}<a class="nav-link" href="{{ url_for('signup') }}">Sign up</a>{% endblock %}
+{% block content %}
+    <h3>{{ year }} Games</h3>
+    {% for game in games_1 %}
+    <ul>
+        <li>{{ game }}</li>
+    </ul>
+    {% endfor %}
+    <h3>{{ year-1 }} Games</h3>
+    {% for game in games_2 %}
+    <ul>
+        <li>{{ game }}</li>
+    </ul>
+    {% endfor %}
+    <h3>{{ year-2 }} Games</h3>
+    {% for game in games_3 %}
+    <ul>
+        <li>{{ game }}</li>
+    </ul>
+    {% endfor %}
+{% endblock %}

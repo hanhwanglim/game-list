@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block login %}<a class="nav-link" href="#">Profile</a>{% endblock %}
+{% block signup %}<a class="nav-link" href="{{ url_for('logout') }}">Logout</a>{% endblock %}
+{% block content %}
+
+<body>
+    <h2>Games related to {{ query }}</h2>
+    <ul>
+        {% for game in games %}
+        <li>{{ game.title }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Developers related to {{ query }}</h2>
+    <ul>
+        {% for developer in developers %}
+        <li>{{ developer }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Publishers related to {{ query }}</h2>
+    <ul>
+        {% for publisher in publishers %}
+        <li>{{ publisher }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Genre related to {{ query }}</h2>
+    <ul>
+        {% for genre in genres %}
+        <li>{{ genre }}</li>
+        {% endfor %}
+    </ul>
+</body>
+{% endblock %}
