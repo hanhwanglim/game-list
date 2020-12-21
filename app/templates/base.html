@@ -20,8 +20,8 @@
                 <a class="navbar-brand" href="{{ url_for('index') }}">Game List</a>
             </div>
             <div class="collapse navbar-collapse justify-content-center">
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search">
+                <form class="d-flex" action="{{ url_for('search') }}" method="POST">
+                    <input class="form-control me-2" type="search" placeholder="Search" name="search" required>
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
             </div>
