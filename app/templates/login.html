@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <title>Login</title>
-    <meta charset="UTF-8">
-</head>
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  </head>
 
-<body>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div>{{ messages[0] }}</div>
-    {% endif %}
-    {% endwith %}
-    <form action="{{ url_for('login') }}" method="POST">
-        {{ form.csrf_token }}
-        {{ form.username.label }}
+  <body class="text-center">
+    <main class="form-signup">
+      <form action="{{ url_for('login') }}" method="POST">
+        <h1 class="h3 mb-3 fw-normal">Login</h1>
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div class="alert alert-warning" role="alert">{{ messages[0] }}</div>
+        {% endif %} {% endwith %} 
+        {% with messages = form.username.errros %} {% if messages %}
+        <div class="alert alert-warning" role="alert">{{ messages[0] }}</div>
+        {% endif %} {% endwith %}  
+        {{ form.csrf_token }} 
+        {{ form.username.label(class_="visually-hidden") }} 
         {{ form.username() }}
-        {% if form.username.errors %}
-        <ul class="errors">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>
-        {% endif %}
-        {{ form.password.label }}
-        {{ form.password() }}
-        {{ form.remember() }}
-        {{ form.remember.label }}
-        <button type="submit">Login</button>
-    </form>
-</body>
-
+        {{ form.password.label(class_="visually-hidden") }} 
+        {{ form.password() }} 
+        {{ form.remember() }} 
+        {{ form.remember.label }} 
+        {{ form.submit() }}
+      </form>
+    </main>
+  </body>
 </html>
