@@ -47,6 +47,7 @@ class Game(db.Model):
     """ A class that stores game details in the database """
     game_id = db.Column(db.Integer, primary_key=True, nullable=False)
     title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
     release_date = db.Column(db.Date, nullable=False)
     developer = db.Column(db.Integer, db.ForeignKey('developer.developer_id'))
     publisher = db.Column(db.Integer, db.ForeignKey('publisher.publisher_id'))
