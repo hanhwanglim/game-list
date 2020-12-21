@@ -2,35 +2,30 @@
 {% block title %}Feed{% endblock %}
 {% block head %}
 {{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='ajax_js.js') }}" ></script>
 {% endblock %}
 {% block login %}<a class="nav-link" href="#">Profile</a>{% endblock %}
 {% block signup %}<a class="nav-link" href="{{ url_for('logout') }}">Logout</a>{% endblock %}
 {% block content %}
-
-<body>
-    <h2>Games related to {{ query }}</h2>
-    <ul>
+<main style="padding-left: 200px; padding-right: 200px;">
+    <h2 style="text-align: center;">Games related to "{{ query }}"</h2>
         {% for game in games %}
-        <li>{{ game.title }}</li>
+        <div class="card mb-3" style="max-width: 2000px;">
+            <div class="row g-0">
+                <div class="col-md-3">
+                    <img src="https://via.placeholder.com/320x200" alt="{{ game.title }}">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ game.title }}</h5>
+                        <p class="card-text">{{ game.description }}</p>
+                        <a id="game_{{ game.game_id }}" href="#" class="btn btn-success add-button" role="button">Add to list</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
-    <h2>Developers related to {{ query }}</h2>
-    <ul>
-        {% for developer in developers %}
-        <li>{{ developer }}</li>
-        {% endfor %}
-    </ul>
-    <h2>Publishers related to {{ query }}</h2>
-    <ul>
-        {% for publisher in publishers %}
-        <li>{{ publisher }}</li>
-        {% endfor %}
-    </ul>
-    <h2>Genre related to {{ query }}</h2>
-    <ul>
-        {% for genre in genres %}
-        <li>{{ genre }}</li>
-        {% endfor %}
-    </ul>
-</body>
+    </div>
+</main>
 {% endblock %}

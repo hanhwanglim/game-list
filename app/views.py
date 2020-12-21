@@ -7,6 +7,7 @@ from app.models import *
 from flask_admin.contrib.sqla import ModelView
 from datetime import date
 from sqlalchemy import func
+import json
 
 
 admin.add_view(ModelView(User, db.session))
@@ -101,19 +102,50 @@ def feed():
     return render_template('feed.html', user=current_user, games=games, checkout=random)
 
 
+@app.route('/add', methods=['POST'])
+def add():
+    data = json.loads(request.data)
+    response = data.get('response')
+    index = response.find('_')
+    game_id = int(response[index + 1 : ])
+    if current_user.is_authenticated:
+        game = Game.query.get(game_id)
+        if not game in current_user.games:
+            current_user.games.append(game)
+            db.session.add(current_user)
+            db.session.commit()
+        return json.dumps({'status': 'OK', 'response': game_id})
+    else:
+        print("error")
+        return redirect(url_for('login'))
+
+
+@app.route('/remove', methods=['POST'])
+def remove():
+    data = json.loads(request.data)
+    response = data.get('response')
+    index = response.find('_')
+    game_id = int(response[index + 1 : ])
+    if current_user.is_authenticated:
+        game = Game.query.get(game_id)
+        if game in current_user.games:
+            current_user.games.remove(game)
+            db.session.add(current_user)
+            db.session.commit()
+        return json.dumps({'status': 'OK', 'response': game_id})
+    else:
+        print("error")
+        return redirect(url_for('login'))
+
+
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    if request.form is not None:
-        query = request.form.get('search')
-        search_query = "%" + request.form.get('search') + "%"
-        print(query)
+    if request.form.get("search") is not None:
+        query = request.form.get("search")
+        search_query = "%" + query + "%"
         games = Game.query.filter(Game.title.like(search_query)).limit(10).all()
-        developers = Developer.query.filter(Developer.name.like(search_query)).limit(10).all()
-        publishers = Publisher.query.filter(Publisher.name.like(search_query)).limit(10).all()
-        genres = Genre.query.filter(Genre.genre_type.like(search_query)).limit(10).all()
-        print(games)
-        return render_template('search.html', query=query, games=games, developers=developers, publishers=publishers, genres=genres)
-    return render_template('search.html')
+        return render_template('search.html', query=query, games=games)
+    return redirect(url_for("index"))
 
 
 

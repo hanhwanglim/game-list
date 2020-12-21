@@ -2,21 +2,50 @@
 {% block title %}Feed{% endblock %}
 {% block head %}
 {{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='ajax_js.js') }}"></script>
 {% endblock %}
 {% block login %}<a class="nav-link" href="#">Profile</a>{% endblock %}
 {% block signup %}<a class="nav-link" href="{{ url_for('logout') }}">Logout</a>{% endblock %}
 {% block content %}
-<body>
-    <h1>Welcome, {{ user.username }}!</h1>
-    <h2>Your games</h2>
-    <ul>
+<main>
+    <div class="container">
+        <h2 style="text-align: center;">Your games</h2>
         {% for game in games %}
-        <li>{{ game.title }}</li>
+        <div id="my-game_{{ game.game_id }}" class="card mb-3" style="max-width: 2000px;">
+            <div class="row">
+                <div class="col-md-4">
+                    <img class="img-fluid" src="https://via.placeholder.com/320x200" alt="{{ game.title }}">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ game.title }}</h5>
+                        <p class="card-text">{{ game.description }}</p>
+                        <a id="game_{{ game.game_id }}" class="btn btn-danger remove-button" role="button">Remove from
+                            list</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
-    <h2>Checkout</h2>
-    {% for game in checkout %}
-    <li>{{ game.title }}</li>
-    {% endfor %}
-</body>
+    </div>
+    <!-- Checkout section -->
+    <div class="container">
+        <h2 style="text-align: center;">Checkout</h2>
+        <div class="row row-cols-1 row-cols-md-5 g-4">
+            {% for game in checkout %}
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://via.placeholder.com/150x120" class="card-img-top" alt="{{ game.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ game.title }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+</main>
 {% endblock %}
