@@ -20,6 +20,10 @@ class RegisterForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     """ A class that validates login form """
-    username = StringField('Username', [validators.DataRequired(), validators.Length(min=4, max=25, message="Username must be between 4 and 25 characters long.")])
-    password = PasswordField('Password', [validators.DataRequired()])
-    remember = BooleanField("Always stay logged in?")
+    username = StringField('Username', [validators.DataRequired(), validators.Length(min=4, max=25, message="Username must be between 4 and 25 characters long.")], render_kw={
+    "class":"form-control", 
+    "placeholder":"Username", 
+    "autofocus":""})
+    password = PasswordField('Password', [validators.DataRequired()], render_kw={"class":"form-control", "placeholder":"Password", "autofocus":""})
+    remember = BooleanField("Remember me?")
+    submit = SubmitField("Login", render_kw={"class":"w-100 btn btn-lg btn-primary"})
