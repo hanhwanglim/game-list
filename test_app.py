@@ -147,6 +147,10 @@ class BasicTests(unittest.TestCase):
         self.assertIn(b'game4', response.data)
 
     def test_search(self):
+        # Test redirect to index if it is a GET request
+        response = self.app.get('/search', follow_redirects=True)
+        self.assertIn(b'<title>Game List</title>', response.data)
+
         # Create games
         for i in range(3):
             game = Game(title="game" + str(i), release_date=date(2020, 1, i+1))
@@ -158,6 +162,61 @@ class BasicTests(unittest.TestCase):
         self.assertIn(b'game0', response.data)
         self.assertNotIn(b'game1', response.data)
         self.assertNotIn(b'game2', response.data)
+
+    def test_add(self):
+        # Create user
+        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
+        user = User.query.filter_by(user_id=int(1)).first()
+        # Create games
+        for i in range(5):
+            game = Game(title="game" + str(i), release_date=date(2020, 1, i+1))
+            db.session.add(game)
+            db.session.commit()
+        # Login user
+        self.login("asdf", "asdfasdf")
+        # Simulating an AJAX response to the server
+        response = self.app.post('/add', json={"response":"game_1"}, follow_redirects=True)
+        self.assertIn(b'{"status": "OK", "response": 1}', response.data)
+        response = self.app.post('/add', json={"response":"game_2"}, follow_redirects=True)
+        self.assertIn(b'{"status": "OK", "response": 2}', response.data)
+        # Check user's game list
+        user = User.query.filter_by(user_id=int(1)).first()
+        self.assertIn(user.games[0].title, "game0")
+        self.assertIn(user.games[1].title, "game1")
+
+
+    def test_remove(self):
+        # Create user
+        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
+        user = User.query.filter_by(user_id=int(1)).first()
+        # Create games
+        for i in range(5):
+            game = Game(title="game" + str(i), release_date=date(2020, 1, i+1))
+            db.session.add(game)
+            db.session.commit()
+        # Adding to user's game list
+        for i in range(5):
+            user.games.append(Game.query.get(i + 1))
+            db.session.add(user)
+            db.session.commit()
+        # Login user
+        self.login("asdf", "asdfasdf")
+        # Simulating an AJAX response to the server
+        response = self.app.post('/remove', json={"response":"game_1"}, follow_redirects=True)
+        self.assertIn(b'{"status": "OK", "response": 1}', response.data)
+        # Check user's game list
+        user = User.query.filter_by(user_id=int(1)).first()
+        self.assertNotIn(user.games, ["game0"])
+
+    def test_logout(self):
+        # Create a user and sign in
+        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
+        self.login("asdf", "asdfasdf")
+        # Logout
+        response = self.app.get('/logout', follow_redirects=True)
+        self.assertIn(b'<title>Game List</title>', response.data)
+
+    
 
 
 if __name__ == "__main__":
