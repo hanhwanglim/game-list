@@ -3,25 +3,52 @@
 {% block head %}
 {{ super() }}
 {% endblock %}
-{% block login %}<a class="nav-link" href="{{ url_for('login') }}">Login</a>{% endblock %}
-{% block signup %}<a class="nav-link" href="{{ url_for('signup') }}">Sign up</a>{% endblock %}
 {% block content %}
-    <h3>{{ year }} Games</h3>
-    {% for game in games_1 %}
-    <ul>
-        <li>{{ game }}</li>
-    </ul>
-    {% endfor %}
-    <h3>{{ year-1 }} Games</h3>
-    {% for game in games_2 %}
-    <ul>
-        <li>{{ game }}</li>
-    </ul>
-    {% endfor %}
-    <h3>{{ year-2 }} Games</h3>
-    {% for game in games_3 %}
-    <ul>
-        <li>{{ game }}</li>
-    </ul>
-    {% endfor %}
+<main>
+    <div class="container">
+        <h2 style="text-align: center;">{{ year }} Games</h2>
+        <div class="row row-cols-1 row-cols-md-5 g-4">
+            {% for game in games_1 %}
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://via.placeholder.com/150x120" class="card-img-top" alt="{{ game.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ game.title }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="container">
+        <h2 style="text-align: center;">{{ year-1 }} Games</h2>
+        <div class="row row-cols-1 row-cols-md-5 g-4">
+            {% for game in games_2 %}
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://via.placeholder.com/150x120" class="card-img-top" alt="{{ game.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ game.title }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="container">
+        <h2 style="text-align: center;">{{ year-2 }} Games</h2>
+        <div class="row row-cols-1 row-cols-md-5 g-4">
+            {% for game in games_3 %}
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://via.placeholder.com/150x120" class="card-img-top" alt="{{ game.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ game.title }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
 {% endblock %}
