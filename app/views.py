@@ -25,13 +25,16 @@ def index():
     Redirects to feed if the user is already logged in.
     Otherwise it will return to the index page.
     """
-    year = date.today().year
+    year = 2020
+    # Query this year's games
     games_1 = Game.query.filter(Game.release_date < date(year + 1, 1, 1), Game.release_date >= date(year, 1, 1)).limit(10)
+    # Query last year's games
     games_2 = Game.query.filter(Game.release_date < date(year, 1, 1), Game.release_date >= date(year - 1, 1, 1)).limit(10)
+    # Query year before last games
     games_3 = Game.query.filter(Game.release_date < date(year - 1, 1, 1), Game.release_date >= date(year - 2, 1, 1)).limit(10)
     if current_user.get_id() is not None:
         return redirect(url_for('feed'))
-    return render_template('index.html', games_1=games_1, games_2=games_2, games_3=games_3, year=year)
+    return render_template('index.html', games_1=games_1, games_2=games_2, games_3=games_3, year=year, login=current_user.is_authenticated)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -54,13 +57,13 @@ def signup():
         # If a user with the same email or username is found then return error
         if find_user_email and find_user_username is not None:
             flash('Username and email has already exist.')
-            return render_template('signup.html', form=form)
+            return render_template('signup.html', form=form, login=current_user.is_authenticated)
         elif find_user_email is not None:
             flash('Email has already exist.')
-            return render_template('signup.html', form=form)
+            return render_template('signup.html', form=form, login=current_user.is_authenticated)
         elif find_user_username is not None:
             flash('Username has already been taken.')
-            return render_template('signup.html', form=form)
+            return render_template('signup.html', form=form, login=current_user.is_authenticated)
 
         # Adding user into the user database
         user = User(email=new_email, username=new_username, password=generate_password_hash(new_password, method='sha256'))
@@ -68,7 +71,7 @@ def signup():
         db.session.commit()
 
         return redirect(url_for("login"))
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', form=form, login=current_user.is_authenticated)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -87,64 +90,77 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user is None or not check_password_hash(user.password, password):
             flash("Username or password incorrect.")
-            return render_template("login.html", form=form)
+            return render_template("login.html", form=form, login=current_user.is_authenticated)
         # Create a session and redirect to feed
         login_user(user, remember=remember)
         return redirect(url_for('feed'))
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, login=current_user.is_authenticated)
 
 
 @app.route('/feed')
 @login_required
 def feed():
+    """
+    The user's feed page. It shows the user's game lists and shows other random games in the
+    game database for the user to checkout
+    """
     games = current_user.games
     random = Game.query.filter_by().order_by(func.random()).limit(5)
-    return render_template('feed.html', user=current_user, games=games, checkout=random)
+    return render_template('feed.html', user=current_user, games=games, checkout=random, login=current_user.is_authenticated)
 
 
 @app.route('/add', methods=['POST'])
+@login_required
 def add():
+    """
+    A route to handle the response from AJAX to add a game to the user's game list.
+    """
+    # Handling response from AJAX
     data = json.loads(request.data)
     response = data.get('response')
     index = response.find('_')
     game_id = int(response[index + 1 : ])
-    if current_user.is_authenticated:
-        game = Game.query.get(game_id)
-        if not game in current_user.games:
-            current_user.games.append(game)
-            db.session.add(current_user)
-            db.session.commit()
-        return json.dumps({'status': 'OK', 'response': game_id})
-    else:
-        print("error")
-        return redirect(url_for('login'))
+    # Find the game in the database
+    game = Game.query.get(game_id)
+    # Update user's game list
+    if not game in current_user.games:
+        current_user.games.append(game)
+        db.session.add(current_user)
+        db.session.commit()
+    return json.dumps({'status': 'OK', 'response': game_id})
 
 
 @app.route('/remove', methods=['POST'])
+@login_required
 def remove():
+    """
+    A route to handle the response from AJAX to remove a game from the user's game list.
+    """
+    # Handling response from AJAX
     data = json.loads(request.data)
     response = data.get('response')
     index = response.find('_')
     game_id = int(response[index + 1 : ])
-    if current_user.is_authenticated:
-        game = Game.query.get(game_id)
-        if game in current_user.games:
-            current_user.games.remove(game)
-            db.session.add(current_user)
-            db.session.commit()
-        return json.dumps({'status': 'OK', 'response': game_id})
-    else:
-        print("error")
-        return redirect(url_for('login'))
+    # Find game in the database
+    game = Game.query.get(game_id)
+    # Update user's game list
+    if game in current_user.games:
+        current_user.games.remove(game)
+        db.session.add(current_user)
+        db.session.commit()
+    return json.dumps({'status': 'OK', 'response': game_id})
 
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    """
+    A route to display the search query from a user. Returns similar games from the query
+    """
     if request.form.get("search") is not None:
         query = request.form.get("search")
         search_query = "%" + query + "%"
         games = Game.query.filter(Game.title.like(search_query)).limit(10).all()
-        return render_template('search.html', query=query, games=games)
+        return render_template('search.html', query=query, games=games, login=current_user.is_authenticated)
     return redirect(url_for("index"))
 
 
