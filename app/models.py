@@ -58,6 +58,15 @@ class Game(db.Model):
     def __repr__(self):
         return self.title
 
+    def genre_to_string(self):
+        return str(self.genre)[1:-1]
+
+    def model_to_string(self):
+        return str(self.model)[1:-1]
+
+    def platform_to_string(self):
+        return str(self.platform)[1:-1]
+
 
 class Developer(db.Model):
     """ A class that stores developer details in the database """
