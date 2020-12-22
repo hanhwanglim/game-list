@@ -12,7 +12,7 @@ TEST_DB = 'test.db'
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class BasicTests(unittest.TestCase):
+class Test(unittest.TestCase):
     def setUp(self):
         """
         Set config parameters to testing and creating a new test database called test.db
@@ -207,6 +207,23 @@ class BasicTests(unittest.TestCase):
         # Check user's game list
         user = User.query.filter_by(user_id=int(1)).first()
         self.assertNotIn(user.games, ["game0"])
+        
+    def test_change_password(self):
+        # Create a user and sign in
+        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
+        self.login("asdf", "asdfasdf")
+        
+        response = self.app.get('/settings', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        response = self.app.post('/settings', data=dict(old_password="asdfasdf", password="ASDF", confirm="adsf"), follow_redirects=True)
+        self.assertIn(b'Passwords must match.', response.data)
+        response = self.app.post('/settings', data=dict(old_password="ASDFASDF", password="password", confirm="password"), follow_redirects=True)
+        self.assertIn(b'Password incorrect.', response.data)
+        response = self.app.post('/settings', data=dict(old_password="asdfasdf", password="password", confirm="password"), follow_redirects=True)
+        self.assertIn(b'Password updated successfully.', response.data)
+
+        user = User.query.filter_by(user_id=int(1)).first()
+        self.assertTrue(check_password_hash(user.password, "password"), "Password not same")
 
     def test_logout(self):
         # Create a user and sign in
