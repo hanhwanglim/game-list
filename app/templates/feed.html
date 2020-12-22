@@ -5,8 +5,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='ajax_js.js') }}"></script>
 {% endblock %}
-{% block login %}<a class="nav-link" href="#">Profile</a>{% endblock %}
-{% block signup %}<a class="nav-link" href="{{ url_for('logout') }}">Logout</a>{% endblock %}
 {% block content %}
 <main>
     <div class="container">
