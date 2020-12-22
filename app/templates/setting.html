@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='setting.css') }}">
+{% endblock %}
+{% block content %}
+<main class="form-setting text-center">
+<div class="container">
+  <form action="{{ url_for('setting') }}" method="POST">
+    <h1 class="h2 mb-3 fw-normal">Settings</h1>
+    <h1 class="h4 mb-3 fw-normal">Change password</h1>
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div class="alert alert-warning" role="alert">{{ messages[0] }}</div>
+    {% endif %} {% endwith %}
+    {% with messages = form.password.errors %} {% if messages %}
+    <div class="alert alert-warning" role="alert">{{ messages[0] }}</div>
+    {% endif %} {% endwith %}
+    {{ form.csrf_token }}
+    {{ form.old_password.label(class_="visually-hidden") }}
+    {{ form.old_password() }}
+    {{ form.password.label(class_="visually-hidden") }}
+    {{ form.password() }}
+    {{ form.confirm.label(class_="visually-hidden") }}
+    {{ form.confirm() }}
+    {{ form.submit() }}
+  </form>
+</div>
+
+</main>
+{% endblock %}

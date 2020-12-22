@@ -10,7 +10,7 @@ app.config.from_object('config')
 # Database 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db, render_as_batch=True)
-admin = Admin(app,template_mode='bootstrap3')
+admin = Admin(app,template_mode='bootstrap4')
 
 
 from app import views, models

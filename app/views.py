@@ -9,14 +9,23 @@ from datetime import date
 from sqlalchemy import func
 import json
 
+class AdminModelView(ModelView):
+    column_exclude_list = ['password']
 
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Game, db.session))
-admin.add_view(ModelView(Developer, db.session))
-admin.add_view(ModelView(Publisher, db.session))
-admin.add_view(ModelView(Genre, db.session))
-admin.add_view(ModelView(Model, db.session))
-admin.add_view(ModelView(Platform, db.session))
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin()
+
+    def inaccessible_callback(self, name, **kwargs):
+        # redirect to login page if user doesn't have access
+        return redirect(url_for('login', next=request.url))
+
+admin.add_view(AdminModelView(User, db.session))
+admin.add_view(AdminModelView(Game, db.session))
+admin.add_view(AdminModelView(Developer, db.session))
+admin.add_view(AdminModelView(Publisher, db.session))
+admin.add_view(AdminModelView(Genre, db.session))
+admin.add_view(AdminModelView(Model, db.session))
+admin.add_view(AdminModelView(Platform, db.session))
 
 
 @app.route('/', methods=['GET'])
@@ -163,6 +172,24 @@ def search():
         return render_template('search.html', query=query, games=games, login=current_user.is_authenticated)
     return redirect(url_for("index"))
 
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def setting():
+    form = PasswordForm()
+    if form.validate_on_submit():
+        old_password = request.form.get("old_password")
+        if check_password_hash(current_user.password, old_password):
+            new_password = request.form.get("password")
+            current_user.password = generate_password_hash(new_password)
+            db.session.add(current_user)
+            db.session.commit()
+            flash("Password updated successfully.")
+            return render_template('setting.html', form=form, login=current_user.is_authenticated)
+        else:
+            flash("Password incorrect.")
+            return render_template('setting.html', form=form, login=current_user.is_authenticated)
+    return render_template('setting.html', form=form, login=current_user.is_authenticated)
 
 
 @app.route('/logout')
