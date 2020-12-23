@@ -9,6 +9,22 @@ user_game = db.Table('user_game', db.Model.metadata,
                                db.ForeignKey('game.game_id'))
                      )
 
+game_developer = db.Table('game_developer', db.Model.metadata,
+                          db.Column('game_id', db.Integer,
+                                    db.ForeignKey('game.game_id')),
+                          db.Column('developer_id', db.Integer,
+                                    db.ForeignKey(
+                                        'developer.developer_id'))
+                          )
+
+game_publisher = db.Table('game_publisher', db.Model.metadata,
+                          db.Column('game_id', db.Integer,
+                                    db.ForeignKey('game.game_id')),
+                          db.Column('publisher_id', db.Integer,
+                                    db.ForeignKey(
+                                        'publisher.publisher_id'))
+                          )
+
 game_genre = db.Table('game_genre', db.Model.metadata,
                       db.Column('game_id', db.Integer,
                                 db.ForeignKey('game.game_id')),
@@ -73,14 +89,14 @@ class User(UserMixin, db.Model):
 class Game(db.Model):
     """ 
     A class that stores game details in the database 
-    
+
     Attributes
         game_id:        Stores the Game ID
         title:          Stores the game's title
         description:    Stores the game's description
         release_date:   Stores the game's release date
-        developer:      Stores the game's developer ID
-        publisher:      Stores the game's publisher ID
+        developer:      Stores the game's list of developers
+        publisher:      Stores the game's list of publishers
         genre:          Stores the game's list of genres
         model:          Stores the game's list of models
         platform:       Stores the game's list of platforms
@@ -89,22 +105,35 @@ class Game(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
     release_date = db.Column(db.Date, nullable=False)
-    developer = db.Column(db.Integer,
-                          db.ForeignKey('developer.developer_id'))
-    publisher = db.Column(db.Integer,
-                          db.ForeignKey('publisher.publisher_id'))
+    developer = db.relationship('Developer', secondary=game_developer,
+                                backref='game_developer')
+    publisher = db.relationship('Publisher', secondary=game_publisher,
+                                backref='game_publisher')
     genre = db.relationship('Genre', secondary=game_genre,
                             backref='game_genre')
     model = db.relationship('Model', secondary=game_model,
                             backref='game_model')
     platform = db.relationship('Platform', secondary=game_platform,
                                backref='game_platform')
+    image_url = db.Column(db.String, default="placeholder.jpg")
 
     def __repr__(self):
         """
         :return: title
         """
         return self.title
+
+    def developer_to_string(self):
+        """
+        :return: genre list to string
+        """
+        return str(self.developer)[1:-1]
+
+    def publisher_to_string(self):
+        """
+        :return: genre list to string
+        """
+        return str(self.publisher)[1:-1]
 
     def genre_to_string(self):
         """
@@ -124,11 +153,17 @@ class Game(db.Model):
         """
         return str(self.platform)[1:-1]
 
+    def image_url_to_string(self):
+        """
+        :return: image url to string
+        """
+        return "/static/game image/" + self.image_url
+
 
 class Developer(db.Model):
     """ 
     A class that stores developer details in the database 
-    
+
     Attributes
         developer_id:   Stores the Developer's ID
         name:           Stores the developer's name
@@ -137,7 +172,6 @@ class Developer(db.Model):
     developer_id = db.Column(db.Integer, primary_key=True,
                              nullable=False)
     name = db.Column(db.String, nullable=False, unique=True)
-    games = db.relationship('Game', backref='developer_name')
 
     def __repr__(self):
         """
@@ -149,7 +183,7 @@ class Developer(db.Model):
 class Publisher(db.Model):
     """ 
     A class that stores publisher details in the database 
-    
+
     Attributes
         publisher_id:   Stores the Publisher's ID
         name:           Stores the publisher's name
@@ -158,7 +192,6 @@ class Publisher(db.Model):
     publisher_id = db.Column(db.Integer, primary_key=True,
                              nullable=False)
     name = db.Column(db.String, nullable=False, unique=True)
-    games = db.relationship('Game', backref='publisher_name')
 
     def __repr__(self):
         """
@@ -170,7 +203,7 @@ class Publisher(db.Model):
 class Genre(db.Model):
     """ 
     A class that stores genre details in the database
-    
+
     Attributes
         genre_id:   Stores the Genre ID
         genre_type: Stores the genre type
