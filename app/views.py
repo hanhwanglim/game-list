@@ -174,8 +174,8 @@ def login():
         # Find the user
         user = User.query.filter_by(username=username).first()
         # Validate the user
-        password_is_valid = check_password_hash(user.password, password)
-        if user is None or not password_is_valid:
+        if user is None or not check_password_hash(user.password,
+                                                   password):
             flash("Username or password incorrect.")
             return render_template('login.html', form=form,
                                    login=current_user.is_authenticated)
