@@ -7,42 +7,51 @@
 {% endblock %}
 {% block content %}
 <main>
-    <div class="container">
-        <h2 style="text-align: center;">Your games</h2>
-        {% for game in games %}
-        <div id="my-game_{{ game.game_id }}" class="card mb-3" style="max-width: 2000px;">
-            <div class="row">
-                <div class="col-md-4">
-                    <img class="img-fluid" src="https://via.placeholder.com/320x200" alt="{{ game.title }}">
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ game.title }}</h5>
-                        <p class="card-text">{{ game.description }}</p>
-                        <a id="game_{{ game.game_id }}" class="btn btn-danger remove-button" role="button">Remove from
-                            list</a>
-                    </div>
-                </div>
+  <div class="container">
+    <h1>Hello, {{ current_user.username }}</h1>
+    <h2 style="text-align: center;">Your games</h2>
+    {% if not games %}
+    <h3 style="text-align: center;">Looks very lonely, search some games to add!</h2>
+      {% endif %}
+      {% for game in games %}
+      <div id="my-game_{{ game.game_id }}" class="card mb-3" style="max-width: 2000px;">
+        <div class="row">
+          <div class="col-md-4">
+            <img class="img-fluid" src="/static/game image/{{ game.image_url }}" alt="{{ game.title }}" width="320"
+              height="200">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ game.title }}</h5>
+              <p class="card-text">{{ game.description }}</p>
+              <a id="game_{{ game.game_id }}" class="btn btn-danger remove-button" role="button">Remove
+                from
+                list</a>
             </div>
+          </div>
         </div>
-        {% endfor %}
-    </div>
-    <!-- Checkout section -->
-    <div class="container">
-        <h2 style="text-align: center;">Checkout</h2>
-        <div class="row row-cols-1 row-cols-md-5 g-4">
-            {% for game in checkout %}
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/150x120" class="card-img-top" alt="{{ game.title }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ game.title }}</h5>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+      </div>
+      {% endfor %}
+  </div>
+  <!-- Checkout section -->
+  <div class="container">
+
+    <hr />
+    <h2 style="text-align: center;">Checkout</h2>
+    <div class="row row-cols-1 row-cols-md-5 g-4">
+      {% for game in checkout %}
+      <div class="col">
+        <div class="card h-100">
+          <img src="/static/game image/{{ game.image_url }}" class="card-img-top" alt="{{ game.title }}" width="320"
+            height="200">
+          <div class="card-body">
+            <h5 class="card-title">{{ game.title }}</h5>
+          </div>
         </div>
+      </div>
+      {% endfor %}
     </div>
+  </div>
 
 
 </main>

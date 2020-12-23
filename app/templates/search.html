@@ -8,33 +8,37 @@
 {% block content %}
 
 <main>
-    <div class="container">
-        <h2 style="text-align: center;">Games related to "{{ query }}"</h2>
-        {% for game in games %}
-        <div class="card mb-3" style="max-width: 2000px;">
-            <div class="row g-0">
-                <div class="col-md-4">
-                    <img src="https://via.placeholder.com/320x200" class="img-fluid" alt="{{ game.title }}">
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ game.title }}</h5>
-                        <p class="card-text">{{ game.description }}</p>
-                        <p class="card-text"><small class="text-muted">Developer: {{ game.developer_name }}</small></p>
-                        <p class="card-text"><small class="text-muted">Publisher: {{ game.publisher_name }}</small></p>
-                        <p class="card-text"><small class="text-muted">Genre: {{ game.genre_to_string() }}</small></p>
-                        <p class="card-text"><small class="text-muted">Model: {{ game.model_to_string() }}</small></p>
-                        <p class="card-text"><small class="text-muted">Platform: {{ game.platform_to_string() }}</small></p>
-                        {% if login %}
-                        <a id="game_{{ game.game_id }}" href="#" class="btn btn-success add-button" role="button">Add to
-                            list</a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+  <div class="container">
+    <h2 style="text-align: center;">Games related to "{{ query }}"</h2>
+    {% for game in games %}
+    <div class="card mb-3" style="max-width: 2000px;">
+      <div class="row g-0">
+        <div class="col-md-4">
+          <img src="/static/game image/{{ game.image_url }}" class="img-fluid" alt="{{ game.title }}" width="320"
+            height="200">
         </div>
-        {% endfor %}
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">{{ game.title }}</h5>
+            <p class="card-text">{{ game.description }}</p>
+            <p class="card-text"><small class="text-muted">Developer: {{ game.developer_to_string()
+                }}</small></p>
+            <p class="card-text"><small class="text-muted">Publisher: {{ game.publisher_to_string()
+                }}</small></p>
+            <p class="card-text"><small class="text-muted">Genre: {{ game.genre_to_string() }}</small></p>
+            <p class="card-text"><small class="text-muted">Model: {{ game.model_to_string() }}</small></p>
+            <p class="card-text"><small class="text-muted">Platform: {{ game.platform_to_string() }}</small>
+            </p>
+            {% if login %}
+            <a id="game_{{ game.game_id }}" href="#" class="btn btn-success add-button" role="button">Add to
+              list</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
-    </div>
+    {% endfor %}
+  </div>
+  </div>
 </main>
 {% endblock %}
