@@ -1,11 +1,14 @@
 import json
+import os.path as op
 from datetime import date
 
-from app import app, db, admin
+from app import app, db
 from app.forms import RegisterForm, LoginForm, PasswordForm
 from app.models import Game, User, Developer, Publisher, Genre, Model, \
     Platform
 from flask import render_template, request, flash, url_for, redirect
+from flask_admin import Admin, AdminIndexView
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_login import login_user, login_required, logout_user, \
     current_user
@@ -14,12 +17,11 @@ from werkzeug.security import generate_password_hash, \
     check_password_hash
 
 
-class AdminModelView(ModelView):
+class AdminView(AdminIndexView):
     """
-    A class that limits the admin page for admin users only. The admin
-    are not able to see the password column for users.
+    A class that limits the admin page for admin users only. Users 
+    without permission will be displayed an Error:403 page
     """
-    column_exclude_list = ['password']
 
     def is_accessible(self):
         """
@@ -29,15 +31,24 @@ class AdminModelView(ModelView):
         """
         return current_user.is_authenticated and current_user.is_admin()
 
-    def inaccessible_callback(self, name, **kwargs):
-        """
-        Redirect to login page if user is not verified.
 
-        :return: Redirect to login page.
-        """
-        return redirect(url_for('login', next=request.url))
+class AdminModelView(ModelView):
+    """
+    A class that limits the admin page for admin users only. The admin
+    are not able to see the password column for users.
+    """
+    column_exclude_list = ['password']
 
 
+class UploadImages(FileAdmin):
+    """
+    A class that limits the admin page for admin users only. The admin
+    is able to upload image files.
+    """
+    allowed_extensions = {'png', 'jpg', 'jpeg'}
+
+
+admin = Admin(app, template_mode='bootstrap4', index_view=AdminView())
 # Setting what database can the admin view
 admin.add_view(AdminModelView(User, db.session))
 admin.add_view(AdminModelView(Game, db.session))
@@ -46,6 +57,8 @@ admin.add_view(AdminModelView(Publisher, db.session))
 admin.add_view(AdminModelView(Genre, db.session))
 admin.add_view(AdminModelView(Model, db.session))
 admin.add_view(AdminModelView(Platform, db.session))
+path = op.join(op.dirname(__file__), 'static/game image')
+admin.add_view(UploadImages(path, '/game image/', name='Game images'))
 
 
 @app.route('/', methods=['GET'])
