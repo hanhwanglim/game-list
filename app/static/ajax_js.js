@@ -10,6 +10,7 @@ $(document).ready(function () {
       contentType: "application/json; charset=utf-8",
       dataType: "json",
 
+      // Update button status to disabled
       success: function (response) {
         element_id = "#game_" + response.response;
         $(element_id).text("Added to list");
@@ -34,6 +35,7 @@ $(document).ready(function () {
       contentType: "application/json; charset=utf-8",
       dataType: "json",
 
+      // Remove game from list animation
       success: function (response) {
         element_id = "#my-game_" + response.response;
         $(element_id).fadeOut("normal", function() {
