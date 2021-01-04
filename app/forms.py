@@ -41,6 +41,9 @@ class RegisterForm(FlaskForm):
     username_error = "Username must be between 4 and 25 characters long"
     password_error_1 = "Password must be longer than 6 characters."
     password_error_2 = "Passwords must match"
+    password_error_3 = "Must contain at least one  number and one\
+                        uppercase and lowercase letter, and at least \
+                        8 or more characters"
 
     # Validators
     email_validator = [validators.DataRequired(),
@@ -54,7 +57,9 @@ class RegisterForm(FlaskForm):
                           validators.Length(min=6,
                                             message=password_error_1),
                           validators.EqualTo('confirm',
-                                             message=password_error_2)]
+                                             message=password_error_2),
+                          validators.Regexp('(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}',
+                                            message=password_error_3)]
     confirm_validator = [validators.DataRequired()]
     tos_validator = [validators.InputRequired()]
 
@@ -64,7 +69,8 @@ class RegisterForm(FlaskForm):
     render_username = {'class': 'form-control',
                        'placeholder': "Username"}
     render_password = {'class': 'form-control',
-                       'placeholder': "Password"}
+                       'placeholder': "Password",
+                       'pattern': '(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}'}
     render_confirm = {'class': 'form-control',
                       'placeholder': "Confirm password"}
     render_submit = {'class': 'w-100 btn btn-lg btn-primary'}
@@ -152,6 +158,9 @@ class PasswordForm(FlaskForm):
     # Error messages
     password_error_1 = "Passwords must match."
     password_error_2 = "Password must be longer than 6 characters."
+    password_error_3 = "Must contain at least one  number and one\
+                        uppercase and lowercase letter, and at least \
+                        8 or more characters"
 
     # Validators
     old_password_validator = [validators.DataRequired()]
@@ -159,7 +168,9 @@ class PasswordForm(FlaskForm):
                           validators.Length(min=6,
                                             message=password_error_2),
                           validators.EqualTo('confirm',
-                                             message=password_error_1)]
+                                             message=password_error_1),
+                          validators.Regexp('(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}', 
+                                            message=password_error_3)]
     confirm_validator = [validators.DataRequired()]
 
     # Render style
@@ -167,7 +178,8 @@ class PasswordForm(FlaskForm):
                            'placeholder': old_password_label,
                            'autofocus': ''}
     render_password = {'class': 'form-control',
-                       'placeholder': password_label}
+                       'placeholder': password_label,
+                       'pattern': '(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}'}
     render_confirm = {'class': 'form-control',
                       'placeholder': confirm_label}
     render_submit = {'class': 'w-100 btn btn-lg btn-primary'}
