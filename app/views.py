@@ -281,10 +281,22 @@ def search():
 
 @app.route('/game/<int:game_id>', methods=['GET'])
 def game(game_id):
+    """
+    The webpage provides each game with their own page. If the user is
+    logged in they can also add their games from there.
+    
+    :return: Redirect to game page. Otherwise get page error.
+    """
     game = Game.query.get(int(game_id))
     if game is None:
         return "Cannot find game"
-    return render_template('game.html', game=game, login=current_user.is_authenticated)
+    if current_user.is_authenticated:
+        user_game = current_user.games
+    else:
+        user_game = None
+    return render_template('game.html', game=game, 
+                           login=current_user.is_authenticated, 
+                           user_games=user_game)
 
 
 @app.route('/setting', methods=['GET', 'POST'])

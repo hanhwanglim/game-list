@@ -24,7 +24,15 @@
 		<p>{{ game.model_to_string() }}</p>
 		<h3>Platform</h3>
 		<p>{{ game.platform_to_string() }}</p>
-
+            {% if login %}
+              {% if game in user_games %}
+              <a id="game_{{ game.game_id }}" class="btn btn-success add-button disabled" role="button">Added to
+                list</a>
+              {% else %}
+              <a id="game_{{ game.game_id }}" class="btn btn-success add-button" role="button">Add to
+                list</a>
+              {% endif %}
+            {% endif %}
 
 	</div>
 </main>
