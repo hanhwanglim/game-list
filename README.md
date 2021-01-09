@@ -18,13 +18,15 @@ flask run
 ## Admin page
 To access the admin page go to the [login](http://localhost:5000/login/) page.
 
-
 Use the credentials:
-
 ```
 Username: admin
 Password: password
 ```
-
-
 Then go to the [admin](http://localhost:5000/admin/) page.
+
+## Testing
+```bash
+coverage run test_app.py
+coverage report -m app/*.py
+```
