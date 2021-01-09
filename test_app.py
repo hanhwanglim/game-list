@@ -61,6 +61,25 @@ class Test(unittest.TestCase):
                                                  remember=True),
                              follow_redirects=True)
 
+    def test_index(self):
+        """
+        Test the index page
+
+        Test included:
+            Test if index route is functional
+            Test if redirect to feed if user is logged in
+        """
+        # Test if route is functional
+        response = self.app.get('/', follow_redirects=True)
+        self.assertEqual(response.status_code, 200,
+                         "Route is not functional")
+        # Test redirect if user is logged in
+        self.register("adamadam@adammail.com", "adamadam", "eSM&A@6}", "eSM&A@6}")
+        response = self.login("adamadam", "eSM&A@6}")
+        response = self.app.get('/', follow_redirects=True)
+        self.assertIn(b'<title>Feed</title>', response.data,
+                      "Redirect failed")
+
     def test_sign_up(self):
         """
         Test the sign up functionality.
@@ -72,7 +91,7 @@ class Test(unittest.TestCase):
             Test if error messages are displayed accordingly
             Test if user already exist
         """
-        # Test if route '/signup' is functional
+        # ~~~~~~~~~~~~~~~~ Test if route '/signup' is functional ~~~~~~~~~~~~~~~~
         response = self.app.get('/signup', follow_redirects=True)
         self.assertEqual(response.status_code, 200,
                          "Route is not functional")
@@ -80,66 +99,59 @@ class Test(unittest.TestCase):
         self.assertEqual(response.status_code, 200,
                          "Route is not functional")
 
-        # Test for first user
+        # ~~~~~~~~~~~~~~~~ Test for sign up user ~~~~~~~~~~~~~~~~
         response = self.register("adamadam@adammail.com", "adamadam",
-                                 "adampassword", "adampassword")
+                                 "eSM&A@6}", "eSM&A@6}")
         self.assertEqual(response.status_code, 200,
                          "User cannot register")
 
         user = User.query.filter_by(user_id=int(1)).first()
+        # Test if details match when sign up
         self.assertEqual(user.email, "adamadam@adammail.com",
                          "Email not same")
         self.assertEqual(user.username, "adamadam", "Username not same")
         self.assertTrue(
-            check_password_hash(user.password, "adampassword"),
-            "Password not same")
-        # Test for second user
-        response = self.register("eveeve@evemail.com", "eveeve",
-                                 "evepassword", "evepassword")
-        self.assertEqual(response.status_code, 200,
-                         "New user cannot register")
-
-        user = User.query.filter_by(user_id=int(2)).first()
-        self.assertEqual(user.email, "eveeve@evemail.com",
-                         "Email not same")
-        self.assertEqual(user.username, "eveeve", "Username not same")
-        self.assertTrue(
-            check_password_hash(user.password, "evepassword"),
+            check_password_hash(user.password, "eSM&A@6}"),
             "Password not same")
 
-        # Test invalid submission
-        response = self.register('not_an_email', 'asdfasdf', 'password',
-                                 'password')
+        # ~~~~~~~~~~~~~~~~ Test invalid submission ~~~~~~~~~~~~~~~~
+        # Test invalid email
+        response = self.register('not_an_email', 'asdfasdf', 'eSM&A@6}',
+                                 'eSM&A@6}')
         self.assertIn(b'Invalid email address.', response.data,
                       "Email validation failed")
-
+        # Test short username
         response = self.register('asdf@asdf.com', 'abc', 'password',
                                  'password')
         self.assertIn(
-            b'Username must be between 4 and 25 characters long',
+            b'Username must be between 6 and 25 characters long',
             response.data, "Username validation failed")
-
+        # Test same password
         response = self.register('asdf@asdf.com', 'asdfasdf',
                                  'password', 'PASSWORD')
         self.assertIn(b'Passwords must match', response.data,
                       "Password validation failed")
-
-        # Test existing submission
+        # Test simple password
+        response = self.register('asdf@asdf.com', 'asdfasdf',
+                                 'password', 'password')
+        self.assertIn(b'Password must contain at least one number and', response.data,
+                      "Password validation failed")
+        # ~~~~~~~~~~~~~~~~ Test existing submission ~~~~~~~~~~~~~~~~
         # Populating database
-        user = User(email="user1@mail.com", username="user1",
-                    password="password1")
+        user = User(email="user1@mail.com", username="username1",
+                    password="eSM&A@6}")
         db.session.add(user)
         db.session.commit()
-        response = self.register('user1@mail.com', 'user1', 'password1',
-                                 'password1')
+        response = self.register('user1@mail.com', 'username1', 'eSM&A@6}',
+                                 'eSM&A@6}')
         self.assertIn(b'Username and email has already exist.',
                       response.data, "Flash message failed")
         response = self.register('user1@mail.com', 'newuser1',
-                                 'password1', 'password1')
+                                 'eSM&A@6}', 'eSM&A@6}')
         self.assertIn(b'Email has already exist.', response.data,
                       "Flash message failed")
-        response = self.register('newuser1@mail.com', 'user1',
-                                 'password1', 'password1')
+        response = self.register('newuser1@mail.com', 'username1',
+                                 'eSM&A@6}', 'eSM&A@6}')
         self.assertIn(b'Username has already been taken.',
                       response.data, "Flash message failed")
 
@@ -154,7 +166,7 @@ class Test(unittest.TestCase):
             Test if for incorrect login details.
             Test if error messages are displayed.
         """
-        # Test if route '/login' is functional
+        # ~~~~~~~~~~~~~~~~ Test if route '/login' is functional ~~~~~~~~~~~~~~~~ 
         response = self.app.get('/login', follow_redirects=True)
         self.assertEqual(response.status_code, 200,
                          "Route not functional")
@@ -162,20 +174,23 @@ class Test(unittest.TestCase):
         self.assertEqual(response.status_code, 200,
                          "Route not functional")
 
-        # Test for valid user
-        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
-        response = self.login("asdf", "asdfasdf")
+        # ~~~~~~~~~~~~~~~~ Test for valid user ~~~~~~~~~~~~~~~~
+        self.register("asdf@mail.com", "asdfasdf", "eSM&A@6}", "eSM&A@6}")
+        response = self.login("asdfasdf", "eSM&A@6}")
         self.assertIn(b'Feed', response.data, "User is not redirected")
 
-        # Test for invalid user
-        self.register("asdf@mail.com", "USERX", "ASDFADSF", "ASDFASDF")
-        response = self.login("userX", "asdfasdf")
+        # ~~~~~~~~~~~~~~~~ Test for invalid user ~~~~~~~~~~~~~~~~
+        self.register("asdf@mail.com", "USERXXXX", "eSM&A@6}", "eSM&A@6}")
+        # Incorrect username and password
+        response = self.login("userXXXXXX", "asdfasdf")
         self.assertIn(b'Username or password incorrect.', response.data,
                       "Flash message failed")
-        response = self.login("USERX", "asdfasdf")
+        # Incorrect password
+        response = self.login("USERXXXX", "asdfasdf")
         self.assertIn(b'Username or password incorrect.', response.data,
                       "Flash message failed")
-        response = self.login("userX", "ASDFADSF")
+        # Incorrect username
+        response = self.login("userXXXX", "eSM&A@6}")
         self.assertIn(b'Username or password incorrect.', response.data,
                       "Flash message failed")
 
@@ -201,7 +216,7 @@ class Test(unittest.TestCase):
             db.session.commit()
 
         # Create user
-        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
+        self.register("asdf@mail.com", "asdfasdf", "eSM&A@6}", "eSM&A@6}")
         user = User.query.filter_by(user_id=int(1)).first()
         # Adding to user's game list
         for i in range(5):
@@ -210,7 +225,7 @@ class Test(unittest.TestCase):
             db.session.commit()
 
         # Check if game list is available on user's feed
-        response = self.login("asdf", "asdfasdf")
+        response = self.login("asdfasdf", "eSM&A@6}")
         self.assertIn(b'game0', response.data,
                       "Game is not available on feed")
         self.assertIn(b'game1', response.data,
@@ -251,6 +266,21 @@ class Test(unittest.TestCase):
         self.assertNotIn(b'game1', response.data, "Wrong game in page")
         self.assertNotIn(b'game2', response.data, "Wrong game in page")
 
+    def test_game_page(self):
+        # Create games
+        for i in range(5):
+            game = Game(title="game" + str(i),
+                        release_date=date(2020, 1, i + 1))
+            db.session.add(game)
+            db.session.commit()
+        
+        response = self.app.get('/game/1', follow_redirects=True)
+        self.assertIn(b'<h1>game0</h1>', response.data, "Game page failed")
+        response = self.app.get('/game/2', follow_redirects=True)
+        self.assertIn(b'<h1>game1</h1>', response.data, "Game page failed")
+        response = self.app.get('/game/3', follow_redirects=True)
+        self.assertIn(b'<h1>game2</h1>', response.data, "Game page failed")
+
     def test_add(self):
         """
         Test the adding to list functionality.
@@ -260,7 +290,7 @@ class Test(unittest.TestCase):
             Test if game is added to the user's game list.
         """
         # Create user
-        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
+        self.register("asdf@mail.com", "asdfasdf", "eSM&A@6}", "eSM&A@6}")
         # Create games
         for i in range(5):
             game = Game(title="game" + str(i),
@@ -268,7 +298,7 @@ class Test(unittest.TestCase):
             db.session.add(game)
             db.session.commit()
         # Login user
-        self.login("asdf", "asdfasdf")
+        self.login("asdfasdf", "eSM&A@6}")
         # Simulating an AJAX response to the server
         response = self.app.post('/add', json={"response": "game_1"},
                                  follow_redirects=True)
@@ -294,7 +324,7 @@ class Test(unittest.TestCase):
             Test if the game is removed from the user's game list.
         """
         # Create user
-        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
+        self.register("asdf@mail.com", "asdfasdf", "eSM&A@6}", "eSM&A@6}")
         user = User.query.filter_by(user_id=int(1)).first()
         # Create games
         for i in range(5):
@@ -308,15 +338,21 @@ class Test(unittest.TestCase):
             db.session.add(user)
             db.session.commit()
         # Login user
-        self.login("asdf", "asdfasdf")
+        self.login("asdfasdf", "eSM&A@6}")
         # Simulating an AJAX response to the server
         response = self.app.post('/remove', json={"response": "game_1"},
                                  follow_redirects=True)
         self.assertIn(b'{"status": "OK", "response": 1}', response.data,
                       "Response error")
+        response = self.app.post('/remove', json={"response": "game_2"},
+                                 follow_redirects=True)
+        self.assertIn(b'{"status": "OK", "response": 2}', response.data,
+                      "Response error")
         # Check user's game list
         user = User.query.filter_by(user_id=int(1)).first()
         self.assertNotIn(user.games, ["game0"], "Game is not removed")
+        user = User.query.filter_by(user_id=int(1)).first()
+        self.assertNotIn(user.games, ["game1"], "Game is not removed")
 
     def change_password(self, old_password, password, confirm):
         """
@@ -343,27 +379,27 @@ class Test(unittest.TestCase):
             Test if the password is updated in the database.
         """
         # Create a user and sign in
-        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
-        self.login("asdf", "asdfasdf")
+        self.register("asdf@mail.com", "asdfasdf", "eSM&A@6}", "eSM&A@6}")
+        self.login("asdfasdf", "eSM&A@6}")
 
         response = self.app.get('/setting', follow_redirects=True)
         self.assertEqual(response.status_code, 200,
                          "Route not functional")
-        response = self.change_password("asdfasdf", "ASDFASDF", "asdfasdf")
+        response = self.change_password("eSM&A@6}", "ASDFASDF", "asdfasdf")
         self.assertIn(b'Passwords must match.', response.data,
                       "Error message failed")
-        response = self.change_password("ASDFADSF", "password",
-                                        "password")
+        response = self.change_password("ASDFADSF", "z5B2&,_J",
+                                        "z5B2&,_J")
         self.assertIn(b'Password incorrect.', response.data,
                       "Error message failed")
-        response = self.change_password("asdfasdf", "password",
-                                        "password")
+        response = self.change_password("eSM&A@6}", "z5B2&,_J",
+                                        "z5B2&,_J")
         self.assertIn(b'Password updated successfully.', response.data,
                       "Error message failed")
 
         user = User.query.filter_by(user_id=int(1)).first()
-        self.assertTrue(check_password_hash(user.password, "password"),
-                        "Password not same")
+        self.assertTrue(check_password_hash(user.password, "z5B2&,_J"),
+                        "Password not changed")
 
     def test_logout(self):
         """
@@ -375,8 +411,8 @@ class Test(unittest.TestCase):
             Test if the user is able to access the restricted feed page.
         """
         # Create a user and sign in
-        self.register("asdf@mail.com", "asdf", "asdfasdf", "asdfasdf")
-        self.login("asdf", "asdfasdf")
+        self.register("asdf@mail.com", "asdfasdf", "eSM&A@6}", "eSM&A@6}")
+        self.login("asdfasdf", "eSM&A@6}")
         # Logout
         response = self.app.get('/logout', follow_redirects=True)
         self.assertIn(b'<title>Game List</title>', response.data,
