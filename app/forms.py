@@ -21,7 +21,7 @@ class RegisterForm(FlaskForm):
                     Email must be between 6 to 35 characters
                     Email must be legitimate
         username:   Input required
-                    Username must be between 4 to 35 characters
+                    Username must be between 6 to 35 characters
         password:   Input required
                     Password must be minimum 6 characters
                     Password must be same as repeated password
@@ -38,11 +38,11 @@ class RegisterForm(FlaskForm):
 
     # Error messages
     email_error = "Invalid email address."
-    username_error = "Username must be between 4 and 25 characters long"
+    username_error = "Username must be between 6 and 25 characters long"
     password_error_1 = "Password must be longer than 6 characters."
     password_error_2 = "Passwords must match"
-    password_error_3 = "Must contain at least one  number and one\
-                        uppercase and lowercase letter, and at least \
+    password_error_3 = "Password must contain at least one number and \
+                        one uppercase and lowercase letter, and at least \
                         8 or more characters"
 
     # Validators
@@ -51,7 +51,7 @@ class RegisterForm(FlaskForm):
                                          message=email_error),
                        validators.Email(message=email_error)]
     username_validator = [validators.DataRequired(),
-                          validators.Length(min=4, max=25,
+                          validators.Length(min=6, max=25,
                                             message=username_error)]
     password_validator = [validators.DataRequired(),
                           validators.Length(min=6,
@@ -69,8 +69,7 @@ class RegisterForm(FlaskForm):
     render_username = {'class': 'form-control',
                        'placeholder': "Username"}
     render_password = {'class': 'form-control',
-                       'placeholder': "Password",
-                       'pattern': '(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}'}
+                       'placeholder': "Password"}
     render_confirm = {'class': 'form-control',
                       'placeholder': "Confirm password"}
     render_submit = {'class': 'w-100 btn btn-lg btn-primary'}
@@ -100,7 +99,6 @@ class LoginForm(FlaskForm):
         
     Validation:
         username:   Input required
-                    Username must be between 4 to 35 characters
         password:   Input required
     """
     # Labels
@@ -109,13 +107,8 @@ class LoginForm(FlaskForm):
     remember_label = "Remember me?"
     submit_label = "Login"
 
-    # Error messages
-    username_error = "Username must be between 4 and 25 characters long."
-
     # Validators
-    username_validator = [validators.DataRequired(),
-                          validators.Length(min=4, max=25,
-                                            message=username_error)]
+    username_validator = [validators.DataRequired()]
     password_validator = [validators.DataRequired()]
 
     # Render style
@@ -158,7 +151,7 @@ class PasswordForm(FlaskForm):
     # Error messages
     password_error_1 = "Passwords must match."
     password_error_2 = "Password must be longer than 6 characters."
-    password_error_3 = "Must contain at least one  number and one\
+    password_error_3 = "Password must contain at least one  number and one\
                         uppercase and lowercase letter, and at least \
                         8 or more characters"
 
@@ -178,8 +171,7 @@ class PasswordForm(FlaskForm):
                            'placeholder': old_password_label,
                            'autofocus': ''}
     render_password = {'class': 'form-control',
-                       'placeholder': password_label,
-                       'pattern': '(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}'}
+                       'placeholder': password_label}
     render_confirm = {'class': 'form-control',
                       'placeholder': confirm_label}
     render_submit = {'class': 'w-100 btn btn-lg btn-primary'}
