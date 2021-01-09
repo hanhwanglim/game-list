@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Game{% endblock %}
+{% block head %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='ajax_js.js') }}"></script>
+{% endblock %}
+{% block content %}
+
+<main>
+	<div class="container">
+		<img class="img-thumbnail float-end" src="/static/game image/{{ game.image_url }}" alt="{{ game.title }}" width="320"
+			height="200">
+		<h1>{{ game.title }}</h1>
+		<h3>Description</h3>
+		<p>{{ game.description }}</p>
+		<h3>Developers</h3>
+		<p>{{ game.developer_to_string() }}</p>
+		<h3>Publishers</h3>
+		<p>{{ game.publisher_to_string() }}</p>
+		<h3>Genre</h3>
+		<p>{{ game.genre_to_string() }}</p>
+		<h3>Model</h3>
+		<p>{{ game.model_to_string() }}</p>
+		<h3>Platform</h3>
+		<p>{{ game.platform_to_string() }}</p>
+
+
+	</div>
+</main>
+{% endblock %}

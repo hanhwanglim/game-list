@@ -22,11 +22,10 @@
           </div>
           <div class="col-md-8">
             <div class="card-body">
-              <h5 class="card-title">{{ game.title }}</h5>
+              <h5 class="card-title"><a class="text-decoration-none" href="{{ game.game_url() }}">{{ game.title }}</a></h5>
               <p class="card-text">{{ game.description }}</p>
               <a id="game_{{ game.game_id }}" class="btn btn-danger remove-button" role="button">Remove
-                from
-                list</a>
+                from list</a>
             </div>
           </div>
         </div>
@@ -45,7 +44,7 @@
           <img src="/static/game image/{{ game.image_url }}" class="card-img-top" alt="{{ game.title }}" width="320"
             height="200">
           <div class="card-body">
-            <h5 class="card-title">{{ game.title }}</h5>
+            <h5 class="card-title"><a class="text-decoration-none" href="{{ game.game_url() }}">{{ game.title }}</a></h5>
           </div>
         </div>
       </div>

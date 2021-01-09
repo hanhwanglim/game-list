@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Feed{% endblock %}
+{% block title %}Search games: {{ query }}{% endblock %}
 {% block head %}
 {{ super() }}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -14,12 +14,12 @@
     <div class="card mb-3" style="max-width: 2000px;">
       <div class="row g-0">
         <div class="col-md-4">
-          <img src="/static/game image/{{ game.image_url }}" class="img-fluid" alt="{{ game.title }}" width="320"
+          <img src="/static/game image/{{ game.image_url }}" class="img-fluid img-thumbnail" alt="{{ game.title }}" width="320"
             height="200">
         </div>
         <div class="col-md-8">
           <div class="card-body">
-            <h5 class="card-title">{{ game.title }}</h5>
+            <h5 class="card-title"><a class="text-decoration-none" href="{{ game.game_url() }}">{{ game.title }}</a></h5>
             <p class="card-text">{{ game.description }}</p>
             <p class="card-text"><small class="text-muted">Developer: {{ game.developer_to_string()
                 }}</small></p>
@@ -30,8 +30,13 @@
             <p class="card-text"><small class="text-muted">Platform: {{ game.platform_to_string() }}</small>
             </p>
             {% if login %}
-            <a id="game_{{ game.game_id }}" href="#" class="btn btn-success add-button" role="button">Add to
-              list</a>
+              {% if game in user_games %}
+              <a id="game_{{ game.game_id }}" class="btn btn-success add-button disabled" role="button">Added to
+                list</a>
+              {% else %}
+              <a id="game_{{ game.game_id }}" class="btn btn-success add-button" role="button">Add to
+                list</a>
+              {% endif %}
             {% endif %}
           </div>
         </div>
