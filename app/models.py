@@ -158,6 +158,12 @@ class Game(db.Model):
         :return: image url to string
         """
         return "/static/game image/" + self.image_url
+    
+    def game_url(self):
+        """
+        :return: game page url to string
+        """
+        return "/game/" + str(self.game_id)
 
 
 class Developer(db.Model):
