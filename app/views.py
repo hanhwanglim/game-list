@@ -269,9 +269,22 @@ def search():
         search_query = "%" + query + "%"
         games = Game.query.filter(Game.title.like(search_query)).limit(
             10).all()
+        if current_user.is_authenticated:
+            user_game = current_user.games
+        else:
+            user_game = None
         return render_template('search.html', query=query, games=games,
-                               login=current_user.is_authenticated)
+                               login=current_user.is_authenticated,
+                               user_games=user_game)
     return redirect(url_for("index"))
+
+
+@app.route('/game/<int:game_id>', methods=['GET'])
+def game(game_id):
+    game = Game.query.get(int(game_id))
+    if game is None:
+        return "Cannot find game"
+    return render_template('game.html', game=game, login=current_user.is_authenticated)
 
 
 @app.route('/setting', methods=['GET', 'POST'])
